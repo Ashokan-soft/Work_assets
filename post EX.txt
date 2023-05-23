@@ -1,0 +1,87 @@
+// controller--page--------------------------------------------------------------------------------------
+
+
+        [HttpPost("Video/InsertVideo")]
+
+        public JsonResult InsertVideoDetails([FromBody] video data)
+        {
+            bool success = false;
+            string conStr = _configuration.GetConnectionString("DBconnection");
+            SqlConnection con = new SqlConnection(conStr);
+            con.Open();
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = con;
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "VideoDetailsSP";
+            cmd.Parameters.Add("@Action", SqlDbType.VarChar).Value = "InsertVideoDetails";
+            cmd.Parameters.Add("@videoId", SqlDbType.Int).Value = 0;
+            cmd.Parameters.Add("@title", SqlDbType.VarChar).Value = data.videoTitle;
+            cmd.Parameters.Add("@description", SqlDbType.VarChar).Value = data.videoDescription;
+            cmd.Parameters.Add("@videoUrl", SqlDbType.VarChar).Value = data.videoUrl;
+            cmd.Parameters.Add("@languageId", SqlDbType.VarChar).Value = data.videoLanguage;
+            cmd.Parameters.Add("@categoryId", SqlDbType.VarChar).Value = data.videoCatogry;
+            cmd.Parameters.Add("@bannerUrl", SqlDbType.VarChar).Value = data.bannerUrl;
+            cmd.Parameters.Add("@releaseDate", SqlDbType.VarChar).Value = data.releaseDate;
+            cmd.Parameters.Add("@duration", SqlDbType.VarChar).Value = data.duration;
+
+            String returnValue = cmd.ExecuteScalar().ToString();
+            con.Close();
+            if (returnValue == "1")
+            {
+                success = true;
+            }
+            return Json(new { Success = success });
+
+        }
+-----------------------------------------------------------------------------------------------------------
+******************************************
+//  class page---------------------------------------------------------------------------------------------
+
+public class video
+    {
+        public int videoId { get; set; }
+        public string videoTitle { get; set; }
+        public string videoDescription { get; set; }
+        public int videoLanguage { get; set; }
+        public int videoCatogry { get; set; }   
+        public string videoUrl { get; set; }    
+        public string bannerUrl { get; set; }
+        public string releaseDate { get; set; }
+        public string duration { get; set; }
+
+    }
+-----------------------------------------------------------------------------------------------------------
+******************************************
+// app-setting page----------------------------------------------------------------------------------------
+
+
+  "ConnectionStrings":
+  {
+    //"DBconnection": "Data Source=LAPTOP-GVM4RBJU\\SQLEXPRESS;Initial catalog=OTTDATABASE;User ID=sa;Password=sa123;",
+    "DBconnection": "Data Source=LAPTOP-GVM4RBJU\\SQLEXPRESS;Initial Catalog=OTTDATABASE;User ID=sa;Password=sa123"
+
+  }
+
+-----------------------------------------------------------------------------------------------------------
+   
+
+program.cs
+-----------
+------------------------------------------------------------------------------------------------------------
+builder.Services.AddCors();
+var app = builder.Build();
+
+app.UseCors(builder =>
+{
+    builder
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader();
+});
+
+
+
+
+
+
